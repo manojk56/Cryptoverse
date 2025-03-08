@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Cryptoverse</h2>
+            <ul>
+                <li><a href="./Homepage.html">🏠 Home</a></li>
+                <li><a href="#" style="color: #29ABE2;">📊 Cryptocurrencies</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <input type="text" id="search" placeholder="Search Cryptocurrency">
+            <div id="crypto-list" class="crypto-list"></div>
+        </div>
+    </div>
+<style>
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+/* Layout */
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    position: fixed; /* Keeps it fixed while scrolling */
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh; /* Full height */
+    background: #0a192f; /* Keep your dark blue background */
+    color: white;
+    padding: 20px;
+    overflow-y: auto; /* Enables scrolling inside the sidebar if needed */
+}
+
+.sidebar h2 {
+    text-align: center;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+.sidebar {
+    width: 250px;
+    background: #0a192f;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed; /* Keep sidebar in place */
+    left: 0;
+    top: 0;
+    overflow-y: auto; /* Enable scrolling if needed */
+}
+#search {
+    width: 50%; /* Reduce width to look better */
+    padding: 12px; /* Add padding */
+    margin: 20px auto; /* Center the search bar */
+    display: block; /* Ensure it aligns properly */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.content {
+    margin-left: 250px; /* Prevent sidebar from overlapping */
+    padding: 20px;
+    flex: 1;
+    background: #f4f4f4;
+}
+/* Crypto List */
+.crypto-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.crypto-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.crypto-card:hover {
+    transform: scale(1.05);
+}
+
+.crypto-card img {
+    width: 40px;
+    height: 40px;
+}
+</style>
+    <script>
+const cryptocurrencies = [
+    { name: "Bitcoin", price: "43K", marketCap: "841.4B", change: "-0", symbol: "bitcoin" },
+    { name: "Ethereum", price: "2.4K", marketCap: "293.5B", change: "4.8", symbol: "ethereum" },
+    { name: "Tether USD", price: "1", marketCap: "91.6B", change: "-0.3", symbol: "tether" },
+    { name: "BNB", price: "336.9", marketCap: "50.8B", change: "8.5", symbol: "binancecoin" },
+    { name: "Solana", price: "102.3", marketCap: "43.9B", change: "-9.8", symbol: "solana" }
+];
+
+const cryptoList = document.getElementById("crypto-list");
+
+// Function to fetch cryptocurrency data from CoinGecko
+async function fetchCryptos() {
+    try {
+        const response = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd");
+        const data = await response.json();
+        
+        displayCryptos(data);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+
+// Function to display cryptocurrencies
+function displayCryptos(cryptos) {
+    cryptoList.innerHTML = "";
+    cryptos.forEach(crypto => {
+        const card = document.createElement("div");
+        card.classList.add("crypto-card");
+        card.innerHTML = `
+            <img src="${crypto.image}" alt="${crypto.name}" onerror="this.src='fallback-icon.png'">
+            <h3>${crypto.name}</h3>
+            <p>Price: $${crypto.current_price}</p>
+            <p>Market Cap: ${crypto.market_cap}</p>
+            <p>Daily Change: ${crypto.price_change_percentage_24h.toFixed(2)}%</p>
+        `;
+        cryptoList.appendChild(card);
+    });
+}
+document.getElementById("search").addEventListener("input", function () {
+    let searchQuery = this.value.toLowerCase();
+    let cryptoCards = document.querySelectorAll(".crypto-card");
+
+    cryptoCards.forEach(card => {
+        let name = card.querySelector("h3").textContent.toLowerCase();
+        if (name.includes(searchQuery)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+});
+// Call the function
+fetchCryptos();
+    </script>
+</body>
+</html>
